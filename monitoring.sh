@@ -1,9 +1,5 @@
-# • L’architecture de votre système d’exploitation ainsi que sa version de kernel.
-# • Le nombre de processeurs physiques.
-# • Le nombre de processeurs virtuels.
-# • La mémoire vive disponible actuelle sur votre serveur ainsi que son taux d’utilisation sous forme de pourcentage.
-# • La mémoire disponible actuelle sur votre serveur ainsi que son taux d’utilisation
-# sous forme de pourcentage.
+#!/bin/bash
+
 # • Le taux d’utilisation actuel de vos processeurs sous forme de pourcentage.
 # • La date et l’heure du dernier redémarrage.
 # • Si LVM est actif ou pas.
@@ -14,4 +10,36 @@
 
 # Utiliser 'wall' pour ecrire le message sur tous les terminaux (Banniere facultative)
 # Utiliser 'cron' pour rappeler ce script en permanence
+
+# cat /etc/os-release
+
+#!/bin/bash
+
+ARCH=$(uname -a)
+PHYSICAL_CPU=$(cat /proc/cpuinfo | grep "physical id" | uniq | awk '{print $4 + 1}')
+VIRTUAL_CPU=$(cat /proc/cpuinfo | grep "processor" | uniq | awk '{print $3 + 1}')
+
+RAM_TOTAL=$(free --mega | grep "Mem" | awk '{print $2}')
+RAM_USED=$(free --mega | grep "Mem" | awk '{print $3}')
+RAM_PERCENT=$(free --mega | awk '$1 == "Mem:" {printf("%.2f"), $3/$2*100}')
+
+DISK_USED=$(df -B 1000000 --total | grep "total" | awk '{print $3}')
+DISK_TOTAL=$(df -B 1000000000 --total | grep "total" | awk '{print $2}')
+DISK_PERCENT=$(df -B 1 --total | grep "total" | awk '{printf("%.2f"), $3/$2*100}')
+
+
+
+echo "  #Architecture: $ARCH
+        #CPU physical: $PHYSICAL_CPU
+        #vCPU: $VIRTUAL_CPU
+        #Memory Usage: $RAM_USED/${RAM_TOTAL}MB ($RAM_PERCENT%)
+        #Disk Usage: $DISK_USED/${DISK_TOTAL}GB ($DISK_PERCENT%)
+        #CPU load: $CPU_LOAD
+        #Last boot: $LAST_BOOT
+        #LVM use: $LVM_USE
+        #Connections TCP: $CONN_TCP ESTABLISHED
+        #User log: $USER_LOG
+        #Network: IP $IP ($MAC)
+        #Sudo: $SUDO_CMDS cmd"
+
 

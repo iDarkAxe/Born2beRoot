@@ -13,6 +13,7 @@
 
 # cat /etc/os-release
 
+  GNU nano 7.2                          monitoring.sh                                   
 #!/bin/bash
 
 ARCH=$(uname -a)
@@ -30,12 +31,23 @@ DISK_PERCENT=$(df -B 1 --total | grep "total" | awk '{printf("%.2f"), $3/$2*100}
 
 export LANG=C
 # CPU_LOAD=$(top -bn1 | grep '%Cpu' | sed 's/,/ /g' | awk '{print 100 - $8}')
-CPU_LOAD=$(top -bn1 | grep '^%Cpu' | cut -c 36-40 | awk '{printf("%.1f%%"), 100 - $1}')
-# CPU_LOAD=$(awk '/cpu / {usage=($2+$4)*100/($2+$4+$5)} END {printf("%.2f%%"),  usage "%"}' /pro>
+# CPU_LOAD=$(top -bn1 | grep '^%Cpu' | cut -c 36-40 | awk '{printf("%.1f%%"),  100 - $1}')
+CPU_LOAD=$(awk '/cpu / {usage=($2+$4)*100/($2+$4+$5)} END {printf("%.2f%%"),   usage "%"}' /proc/stat)
 
 LAST_BOOT=$(who -b | awk '{print($3 " " $4)}')
 
 LVM_USE=$(if [ $(lsblk | grep lvm | wc -l) -eq 8 ]; then echo no; else echo yes; fi)
+
+CONN_TCP=$(cat /proc/net/sockstat | grep TCP | awk '{print $3}')
+
+USER_LOG=$(who | wc -l)
+
+IP=(hostname | awk '{print $1}')
+MAC=$(ip link show | grep "link/ether" | awk '{print $2}')
+
+SUDO_CMDS=$(journalctl -q "_COMM=sudo" | grep COMMAND | wc -l)
+# SUDO_CMDS2=$(cat /var/log/sudo/sudo.log | grep "COMMAND" | wc -l)
+
 
 echo "  #Architecture: $ARCH
         #CPU physical: $PHYSICAL_CPU
@@ -49,4 +61,7 @@ echo "  #Architecture: $ARCH
         #User log: $USER_LOG
         #Network: IP $IP ($MAC)
         #Sudo: $SUDO_CMDS cmd"
+
+
+
 

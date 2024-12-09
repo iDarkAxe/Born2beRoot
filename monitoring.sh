@@ -43,10 +43,13 @@ then
   MAC=$(echo "$MAC" | sed ':a;N;$!ba;s/\n/ et /g')
 fi
 
-SUDO_CMDS=$(journalctl -q "_COMM=sudo" | grep COMMAND | wc -l)
-# SUDO_CMDS2=$(cat /var/log/sudo/sudo.log | grep "COMMAND" | wc -l)
+# Count Nbr of Sudos from the start 
+# Second counts from the log file creation and setup
+# SUDO_CMDS=$(journalctl -q "_COMM=sudo" | grep COMMAND | wc -l)
+SUDO_CMDS=$(cat /var/log/sudo/sudo.log | grep "COMMAND" | wc -l)
 
-echo "  #Architecture: $ARCH
+# should replace 'wall' by 'echo' for tests
+wall "  #Architecture: $ARCH
         #CPU physical: $PHYSICAL_CPU
         #vCPU: $VIRTUAL_CPU
         #Memory Usage: $RAM_USED/${RAM_TOTAL}MB ($RAM_PERCENT%)
